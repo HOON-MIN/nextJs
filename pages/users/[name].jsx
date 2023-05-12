@@ -2,6 +2,8 @@ import fetch from "isomorphic-unfetch";
 import Profile from "./Profile";
 import styled from "styled-jsx/css";
 import formatDistance from "date-fns/formatDistance";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 const style = styled`
     .user-contents-wrapper{
@@ -59,9 +61,38 @@ const style = styled`
     .repository-updated-at{
         margin-left: 20px;
     }
+
+    .repository-pagination{
+      border : 1px solid rgba(27,31,35,0.15);
+      border-radious : 3px;
+      width : fit-content;
+      margin : auto;
+      margin-top: 20px;
+    }
+
+    .repository-pagination button{
+      padding: 6px; 12px;
+      font-size : 14px;
+      border : 0;
+      color : #0366d6;
+      font-weight :bold;
+      cursor : pointer;
+      outline : none;
+    }
+
+    .repository-pagination buttion:first-child{
+      background-color : #0366d6;
+      color :white;
+    }
+    .repository-pagination button:disabled {
+      color : rgba(27,31,35,0.3);
+    }
 `;
 
 const name = ({ user, repos }) => {
+  const router = useRouter();
+  const { page } = router.query;
+  console.log(page);
   if (!user) {
     return null;
   }
@@ -95,6 +126,20 @@ const name = ({ user, repos }) => {
               </p>
             </div>
           ))}
+        <div className="repository-pagination">
+          <Link href={`users/${user.login}?page=${Number(page) - 1}`}>
+            <button type="button" disabled={page && page === "1"}>
+              Previous
+            </button>
+          </Link>
+          <Link
+            href={`/users/${user.login}?page=${!page ? "2" : Number(page) + 1}`}
+          >
+            <button type="button" disabled={repos.length < 10}>
+              Next
+            </button>
+          </Link>
+        </div>
       </div>
       <style jsx>{style}</style>
     </div>
@@ -102,7 +147,7 @@ const name = ({ user, repos }) => {
 };
 
 export const getServerSideProps = async ({ query }) => {
-  const { name } = query;
+  const { name, page } = query;
   try {
     let user;
     let repos;
@@ -111,7 +156,7 @@ export const getServerSideProps = async ({ query }) => {
       user = await userRes.json();
     }
     const repoRes = await fetch(
-      `https://api.github.com/users/${name}/repos?sort=updated&page=1&perpage=10`
+      `https://api.github.com/users/${name}/repos?sort=updated&${page}&perpage=10`
     );
     if (repoRes.status === 200) {
       repos = await repoRes.json();
