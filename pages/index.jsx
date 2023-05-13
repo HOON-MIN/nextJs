@@ -16,9 +16,7 @@ const App = ({ user }) => {
         <input value={username} onChange={(e) => setUsername(e.target.value)} />
       </label>
       <p>{username} 깃허브 검색하기</p>
-      <Link href={`/users/${username}/repos?sort=updated&page=1&per_page=10`}>
-        검색하기
-      </Link>
+      <Link href={`/users/${username}`}>검색하기</Link>
 
       <br />
       <br />
