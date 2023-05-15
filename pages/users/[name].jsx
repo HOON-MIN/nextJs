@@ -1,8 +1,8 @@
 import fetch from "isomorphic-unfetch";
-import Profile from "./Profile";
+import Profile from "../../components/Profile";
 import styled from "styled-jsx/css";
 import { useRouter } from "next/router";
-import Repositories from "./Repositories";
+import Repositories from "../../components/Repositories";
 
 const style = styled`
     .user-contents-wrapper{
